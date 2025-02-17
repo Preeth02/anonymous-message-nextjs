@@ -1,13 +1,10 @@
-import { signIn } from "@/app/api/auth/[...nextauth]/options";
+// import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 
-export function SignIn() {
+export default function page() {
   return (
-    <form
-      action={async (formData) => {
-        "use server";
-        await signIn("credentials", formData);
-      }}
-    >
+      <form
+      >
+        <div>Hello</div>
       <label>
         Email
         <input name="email" type="email" />

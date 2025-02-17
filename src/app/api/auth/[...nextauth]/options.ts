@@ -5,8 +5,9 @@ import { ZodError } from "zod";
 import connectDB from "@/lib/dbConnect";
 import UserModel, { User } from "@/model/User";
 import bcryptjs from "bcryptjs";
+import { NextAuthOptions } from "next-auth";
 // Your own logic for dealing with plaintext password strings; be careful!
-export const { handlers, signIn, signOut, auth } = NextAuth({
+export const authOptions: NextAuthOptions = {
   providers: [
     Credentials({
       // You can specify which fields should be submitted, by adding keys to the `credentials` object.
@@ -75,4 +76,4 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     signIn: "/sign-in",
   },
   secret: process.env.AUTH_SECRET,
-});
+};
