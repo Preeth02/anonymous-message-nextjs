@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import * as z from "zod";
-import Link from "next/link";
 import { useDebounceCallback } from "usehooks-ts";
 import axios, { AxiosError } from "axios";
 import { ApiResponse } from "@/types/ApiResponse";
@@ -173,10 +172,20 @@ const page = () => {
                         {...field}
                       />
                     </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit">Submit</Button>
+              <Button
+                type="submit"
+                className={`bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded ${isSubmitting && " opacity-50 cursor-not-allowed"}`}
+              >
+                {isSubmitting ? (
+                  <Loader2 className="animate-spin" />
+                ) : (
+                  <span>Submit</span>
+                )}
+              </Button>
             </form>
           </Form>
         </div>
