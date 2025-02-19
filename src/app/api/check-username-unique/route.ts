@@ -36,7 +36,7 @@ export async function GET(request: Request) {
     }
     const { username } = result.data;
     const user = await UserModel.findOne({ username });
-    if (user) {
+    if (user && user.isVerified) {
       return Response.json(
         {
           success: false,
