@@ -21,25 +21,32 @@ export const authOptions: NextAuthOptions = {
       authorize: async (credentials): Promise<any> => {
         await connectDB();
         try {
+          console.log("Yo baby 1");
           const { identifier, password } =
             await signInSchema.parseAsync(credentials);
+          console.log("Yo baby 2");
           const user = await UserModel.findOne({
             $or: [{ email: identifier }, { username: identifier }],
           });
+          console.log("Yo baby 3");
 
           if (!user) {
             throw new Error("No user found with the credentials.");
           }
+          console.log("Yo baby 4");
           if (!user.isVerified) {
             throw new Error("Please verify before login.");
           }
+          console.log("Yo baby 5");
           const isPasswordCorrect = await bcryptjs.compare(
             password,
             user.password
           );
+          console.log("Yo baby 6");
           if (!isPasswordCorrect) {
             throw new Error("Incorrect Password.");
           }
+          console.log("Yo baby 7");
           // return JSON object with the user data
           return user;
         } catch (error) {

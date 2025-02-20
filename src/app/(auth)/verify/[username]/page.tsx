@@ -37,11 +37,11 @@ export default function Page() {
   });
   const onSubmit = async (data: z.infer<typeof verifySchema>) => {
     try {
-      const res = await axios.post("/verifyCode", {
+      const res = await axios.post("/api/verifyCode", {
         username: params.username,
         verifyCode: data.code,
       });
-      console.log("Response from the verify code --->", res);
+      // console.log("Response from the verify code --->", res);
       toast({
         title: "Verification Success",
         description: res.data.message,
@@ -49,7 +49,7 @@ export default function Page() {
       router.replace("/sign-in");
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
-      console.log(axiosError);
+      // console.log(axiosError);
       toast({
         description:
           axiosError.response?.data.message ??

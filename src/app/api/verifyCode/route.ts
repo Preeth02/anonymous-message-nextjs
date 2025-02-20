@@ -8,7 +8,6 @@ export async function POST(request: Request) {
 
     //? We are using the decodedUsername as we are passing the username in the frontend which is taken by the url. So it might conatain a space which will be replaced by %20 in the url.
     const decodedUsername = decodeURIComponent(username);
-
     const user = await UserModel.findOne({ username: decodedUsername });
 
     if (!user) {
@@ -22,9 +21,11 @@ export async function POST(request: Request) {
         }
       );
     }
-    const isValidCode = !user.verifyCode === verifyCode;
+    const isValidCode = user.verifyCode === verifyCode;
     const isCodeNotExpired = new Date(user.verifyCodeExpiry) > new Date();
     if (isValidCode && isCodeNotExpired) {
+      user.isVerified = true;
+      await user.save();
       return Response.json(
         {
           success: true,

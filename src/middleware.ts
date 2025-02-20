@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { useSession } from "next-auth/react";
 export { default } from "next-auth/middleware";
 
 export async function middleware(request: NextRequest) {
@@ -9,11 +10,11 @@ export async function middleware(request: NextRequest) {
   if (
     (token && url.pathname == "/sign-in") ||
     url.pathname == "/sign-up" ||
-    url.pathname == "/verify"
+    url.pathname.startsWith("/verify")
   ) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
-  if (!token && url.pathname == "/dashboard") {
+  if (token === null && url.pathname.startsWith("/dashboard")) {
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }
   return NextResponse.next();
@@ -23,8 +24,8 @@ export const config = {
   matcher: [
     "/sign-in",
     "/sign-up",
-    "/verify",
     "/",
+    "/verify",
     "/dashboard/:path*",
     "/verify/:path*",
   ],
