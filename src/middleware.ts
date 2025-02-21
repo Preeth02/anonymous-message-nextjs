@@ -1,32 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getToken } from "next-auth/jwt";
-import { useSession } from "next-auth/react";
 export { default } from "next-auth/middleware";
 
 export async function middleware(request: NextRequest) {
   const token = await getToken({ req: request });
-  console.log("Token", token);
+  console.log("Token", !token);
   const url = request.nextUrl;
   if (
-    (token && url.pathname == "/sign-in") ||
-    url.pathname == "/sign-up" ||
+    (!token && url.pathname === "/sign-up") ||
+    url.pathname.startsWith("/verify")
+  ) {
+    return NextResponse.next();
+  } else if (
+    (token && url.pathname === "/sign-in") ||
+    url.pathname === "/sign-up" ||
     url.pathname.startsWith("/verify")
   ) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
-  if (token === null && url.pathname.startsWith("/dashboard")) {
+  if (!token && url.pathname.startsWith("/dashboard")) {
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: [
-    "/sign-in",
-    "/sign-up",
-    "/",
-    "/verify",
-    "/dashboard/:path*",
-    "/verify/:path*",
-  ],
+  matcher: ["/sign-in", "/sign-up", "/", "/dashboard/:path*", "/verify/:path*"],
 };
