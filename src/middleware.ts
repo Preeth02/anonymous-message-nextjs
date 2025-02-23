@@ -8,10 +8,11 @@ export async function middleware(request: NextRequest) {
   const url = request.nextUrl;
   if (
     (!token && url.pathname === "/sign-up") ||
-    url.pathname.startsWith("/verify")
+    url.pathname.startsWith("/verify*")
   ) {
     return NextResponse.next();
-  } else if (
+  }
+  if (
     (token && url.pathname === "/sign-in") ||
     url.pathname === "/sign-up" ||
     url.pathname.startsWith("/verify")
