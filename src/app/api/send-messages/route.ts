@@ -6,7 +6,7 @@ export async function POST(request: Request) {
   await connectDB();
   try {
     const { username, content } = await request.json();
-    const user = await UserModel.findOne(username);
+    const user = await UserModel.findOne({ username });
     if (!user) {
       return Response.json(
         {
