@@ -39,7 +39,7 @@ export async function GET(req: Request) {
     ]);
     if (!user || user.length === 0) {
       return Response.json(
-        { success: false, message: "Can't fetch the user messages" },
+        { success: false, message: "No messages found" },
         { status: 400 }
       );
     }

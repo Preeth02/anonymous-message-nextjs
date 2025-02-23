@@ -31,41 +31,40 @@ function page() {
   const { data: session } = useSession();
 
   const acceptingMessage = watch("acceptMessages");
+  // console.log(acceptingMessage);
 
-  const fetchMessages = useCallback(
-    async (refresh: boolean = false) => {
-      setIsSwitchLoading(false);
-      setLoading(true);
-      try {
-        const res = await axios.get<ApiResponse>("/api/get-messages");
-        setMessages(res.data.messages || []);
-        if (refresh) {
-          toast({
-            title: "Refreshed message",
-            description: "Showing latest messages",
-          });
-        }
-      } catch (error) {
-        const axiosError = error as AxiosError<ApiResponse>;
+  const fetchMessages = useCallback(async (refresh: boolean = false) => {
+    setIsSwitchLoading(false);
+    setLoading(true);
+    try {
+      const res = await axios.get<ApiResponse>("/api/get-messages");
+      setMessages(res.data.messages || []);
+      if (refresh) {
         toast({
-          title: "Error",
-          description:
-            axiosError.response?.data.message ??
-            "Something went wrong while fetching the messages",
+          title: "Refreshed message",
+          description: "Showing latest messages",
         });
-      } finally {
-        setIsSwitchLoading(false);
-        setLoading(false);
       }
-    },
-    [toast]
-  );
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiResponse>;
+      toast({
+        title: "Error",
+        description:
+          axiosError.response?.data.message ??
+          "Something went wrong while fetching the messages",
+      });
+    } finally {
+      setIsSwitchLoading(false);
+      setLoading(false);
+    }
+  }, []);
   const fetchAcceptingMessage = useCallback(async () => {
     setIsSwitchLoading(true);
     try {
       const res = await axios.get<ApiResponse>("/api/accept-messages");
-      if (!res.data.isAcceptingMessages) return;
-      setValue("acceptMessages", res.data?.isAcceptingMessages);
+      // console.log("acceptMessages", res.data.isAcceptingMessages);
+      // if (!res.data.isAcceptingMessages) return;
+      setValue("acceptMessages", res.data?.isAcceptingMessages as boolean);
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
       toast({
@@ -77,15 +76,17 @@ function page() {
     } finally {
       setIsSwitchLoading(false);
     }
-  }, [acceptingMessage, toast]);
+  }, [toast, setValue]);
 
-  const handleAcceptMessage = async () => {
+  const handleAcceptMessage = async (newVal: boolean) => {
     setIsSwitchLoading(true);
+    // console.log(newVal);
     try {
       const res = await axios.post<ApiResponse>("/api/accept-messages", {
-        acceptingMessage: !acceptingMessage,
+        acceptingMessages: newVal,
       });
-      setValue("acceptMessages", res.data?.isAcceptingMessages as boolean);
+      // console.log(res.data);
+      setValue("acceptMessages", newVal);
       toast({
         title: res.data.message,
       });
@@ -106,7 +107,13 @@ function page() {
     if (!session || !session.user) return;
     fetchAcceptingMessage();
     fetchMessages();
-  }, [setValue, session, toast, fetchAcceptingMessage, fetchMessages]);
+  }, [
+    session?.user?._id,
+    setValue,
+    toast,
+    fetchAcceptingMessage,
+    fetchMessages,
+  ]);
 
   const baseUrl = `${window.location.protocol}//${window.location.host}`;
   if (!session || !session.user) return <></>;
@@ -134,14 +141,26 @@ function page() {
           <Button onClick={copyToClipboard}>Copy</Button>
         </div>
         <div>
-          <Switch
-            {...register("acceptMessages")}
-            disabled={isSwitchLoading}
-            checked={acceptingMessage}
-            onCheckedChange={handleAcceptMessage}
-          />
+          <div className="mb-4">
+            <Switch
+              // {...register("acceptMessages")}
+              checked={acceptingMessage}
+              onCheckedChange={handleAcceptMessage}
+              disabled={isSwitchLoading}
+            />
+            <span className="ml-2">
+              Accept Messages: {acceptingMessage ? "On" : "Off"}
+            </span>
+          </div>
           <Separator />
-          <Button onClick={() => fetchMessages(true)} disabled={loading}>
+          <Button
+            variant={"outline"}
+            onClick={(e) => {
+              e.preventDefault();
+              fetchMessages(true);
+            }}
+            disabled={loading}
+          >
             {loading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (

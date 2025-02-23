@@ -4,7 +4,7 @@ export { default } from "next-auth/middleware";
 
 export async function middleware(request: NextRequest) {
   const token = await getToken({ req: request });
-  console.log("Token", !token);
+  // console.log("Token", !token);
   const url = request.nextUrl;
   if (
     (!token && url.pathname === "/sign-up") ||
