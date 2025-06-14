@@ -64,7 +64,7 @@ const SignIn = () => {
       }
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
-      let errorMessage = axiosError.response?.data.message;
+      const errorMessage = axiosError.response?.data.message;
       toast({
         title: "Signin failed",
         description: errorMessage,
