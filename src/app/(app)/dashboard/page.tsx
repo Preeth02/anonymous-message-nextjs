@@ -19,6 +19,7 @@ function Page() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [isSwitchLoading, setIsSwitchLoading] = useState<boolean>(false);
+  const [profileUrl, setProfileUrl] = useState("")
 
   const messDelete = (messageId: string): void => {
     setMessages(messages.filter((message) => message._id !== messageId));
@@ -104,6 +105,10 @@ function Page() {
 
   useEffect(() => {
     if (!session || !session.user) return;
+    if (session?.user && typeof window !== "undefined") {
+      const baseUrl = `${window.location.protocol}//${window.location.host}`;
+      setProfileUrl(`${baseUrl}/u/${session.user.username}`);
+    }
     fetchAcceptingMessage();
     fetchMessages();
   }, [
@@ -114,9 +119,9 @@ function Page() {
     fetchMessages,
   ]);
 
-  const baseUrl = `${window.location.protocol}//${window.location.host}`;
-  if (!session || !session.user) return <></>;
-  const profileUrl = `${baseUrl}/u/${session.user.username}`;
+  // const baseUrl = `${window.location.protocol}//${window.location.host}`;
+  // if (!session || !session.user) return <></>;
+  // const profileUrl = `${baseUrl}/u/${session.user.username}`;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(profileUrl);
