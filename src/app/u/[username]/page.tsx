@@ -53,7 +53,8 @@ const Page = () => {
       const axiosError = error as AxiosError<ApiResponse>;
       toast({
         title: "Error",
-        description: axiosError.response?.data.message ?? "Unable to fetch suggestions",
+        description:
+          axiosError.response?.data.message ?? "Unable to fetch suggestions",
         variant: "destructive",
       });
     } finally {
@@ -77,7 +78,8 @@ const Page = () => {
       const axiosError = error as AxiosError<ApiResponse>;
       toast({
         title: "Error",
-        description: axiosError.response?.data.message ?? "Something went wrong",
+        description:
+          axiosError.response?.data.message ?? "Something went wrong",
         variant: "destructive",
       });
     } finally {
@@ -115,9 +117,7 @@ const Page = () => {
 
           <div className="flex justify-end">
             <Button type="submit" disabled={loading}>
-              {loading && (
-                <Loader2 className="animate-spin mr-2 h-4 w-4" />
-              )}
+              {loading && <Loader2 className="animate-spin mr-2 h-4 w-4" />}
               Send
             </Button>
           </div>
@@ -142,18 +142,19 @@ const Page = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col space-y-2">
-            {(suggestedMessages.length > 0 ? suggestedMessages : defaultSuggestions).map(
-              (message, index) => (
-                <Button
-                  key={index}
-                  variant="outline"
-                  className="w-fit dark:border-gray-600 dark:text-gray-100"
-                  onClick={() => sendToTextArea(message)}
-                >
-                  {message}
-                </Button>
-              )
-            )}
+            {(suggestedMessages.length > 0
+              ? suggestedMessages
+              : defaultSuggestions
+            ).map((message, index) => (
+              <Button
+                key={index}
+                variant="outline"
+                className="w-full md:w-auto whitespace-normal break-words text-left px-4 py-2 dark:border-gray-600 dark:text-gray-100"
+                onClick={() => sendToTextArea(message)}
+              >
+                {message}
+              </Button>
+            ))}
           </CardContent>
         </Card>
       </div>
