@@ -6,9 +6,9 @@ import { NextRequest } from "next/server";
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { messageId: string } }
+  context: { params: { messageId: string } }
 ) {
-  const { messageId } = params;
+  const { messageId } = context.params;
   await connectDB();
   const session = await getServerSession(authOptions);
   const user: User = session?.user;
