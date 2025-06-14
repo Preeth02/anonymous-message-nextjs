@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { signInSchema } from "@/schema/signInSchema";
 import { signIn } from "next-auth/react";
+import Link from "next/link";
 
 const page = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -76,14 +77,16 @@ const page = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-800">
-      <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-lg shadow-md">
-        <div className="text-center">
-          <h1 className="text-4xl font-extrabold tracking-tight lg:text-5xl mb-6">
-            Join Mystery Message
-          </h1>{" "}
-          <p className="mb-4">Sign up to start your anonymous adventure</p>
-          <Form {...form}>
+    <div className="min-h-screen flex items-center justify-center px-4 bg-gray-200 dark:bg-gray-950">
+    <div className="w-full max-w-md space-y-6 bg-gray-100 dark:bg-gray-900 p-8 rounded-2xl shadow-md border border-gray-200 dark:border-gray-800">
+      <div className="text-center">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Welcome Back</h1>
+        <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+          Sign in to your account to manage messages
+        </p>
+      </div>
+  
+      <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
                 control={form.control}
@@ -118,7 +121,7 @@ const page = () => {
               />
               <Button
                 type="submit"
-                className={`bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded ${isSubmitting && " opacity-50 cursor-not-allowed"}`}
+                className={`bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded ${isSubmitting && " opacity-50 cursor-not-allowed"} `}
               >
                 {isSubmitting ? (
                   <Loader2 className="animate-spin" />
@@ -128,9 +131,19 @@ const page = () => {
               </Button>
             </form>
           </Form>
-        </div>
-      </div>
+  
+      <p className="text-sm text-center text-gray-600 dark:text-gray-400">
+        Don&apos;t have an account?{" "}
+        <Link
+          href="/sign-up"
+          className="font-medium text-blue-600 hover:underline dark:text-blue-400"
+        >
+          Sign up
+        </Link>
+      </p>
     </div>
+  </div>
+  
   );
 };
 

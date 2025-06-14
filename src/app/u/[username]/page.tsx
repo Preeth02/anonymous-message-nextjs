@@ -1,4 +1,5 @@
 "use client";
+
 import { useParams } from "next/navigation";
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -19,57 +20,51 @@ import axios, { AxiosError } from "axios";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { ApiResponse } from "@/types/ApiResponse";
 
-const splChar = "||";
+const defaultSuggestions = [
+  "What's your favorite movie?",
+  "Do you have any pets?",
+  "What's your dream job?",
+];
 
-const makeArr = (message: string): string[] => {
-  return message.split(splChar);
-};
-
-const initialMessageString =
-  "What's your favorite movie?||Do you have any pets?||What's your dream job?";
-
-const page = () => {
-  const { username } = useParams();
+const Page = () => {
+  const { username } = useParams<{ username: string }>();
   const form = useForm<z.infer<typeof messageSchema>>({
     resolver: zodResolver(messageSchema),
   });
 
-  const [suggestedMessages, setSuggestedMessages] = useState("");
+  const [suggestedMessages, setSuggestedMessages] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-  const [isloading, setIsLoading] = useState(false);
-
+  const [isSuggesting, setIsSuggesting] = useState(false);
   const { toast } = useToast();
-  // const content = form.watch("content");
 
   const sendToTextArea = (message: string) => {
     form.setValue("content", message);
   };
 
   const suggestMessageMethod = async () => {
-    setIsLoading(true);
+    setIsSuggesting(true);
     try {
-      const getSuggestedMessage = await axios.post("/api/suggest-messages");
-      // console.log(getSuggestedMessage);
-      setSuggestedMessages(getSuggestedMessage.data.suggestedMessages);
+      const res = await axios.post("/api/suggest-messages");
+      const messages = res.data?.suggestedMessages as string;
+      setSuggestedMessages(messages.split("||"));
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
       toast({
         title: "Error",
-        description: axiosError.response?.data.message,
+        description: axiosError.response?.data.message ?? "Unable to fetch suggestions",
         variant: "destructive",
       });
     } finally {
-      setIsLoading(false);
+      setIsSuggesting(false);
     }
   };
+
   const onSubmit = async (data: z.infer<typeof messageSchema>) => {
-    setLoading(false);
+    setLoading(true);
     try {
-      const getSuggestedMessage = await axios.post("/api/send-messages", {
+      await axios.post("/api/send-messages", {
         content: data.content,
         username,
       });
@@ -77,12 +72,12 @@ const page = () => {
         title: "Success",
         description: "Your message has been sent to the creator.",
       });
-      form.reset({content:""});
+      form.reset({ content: "" });
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
       toast({
         title: "Error",
-        description: axiosError.response?.data.message,
+        description: axiosError.response?.data.message ?? "Something went wrong",
         variant: "destructive",
       });
     } finally {
@@ -91,68 +86,74 @@ const page = () => {
   };
 
   return (
-    <div className="container mx-auto my-8 p-6 bg-white rounded max-w-4xl">
-      <h1 className="text-4xl font-bold mb-6 text-center">
-        Public Profile Link
+    <div className="container mx-auto my-8 p-6 rounded max-w-4xl shadow-md bg-white dark:bg-gray-900">
+      <h1 className="text-4xl font-bold mb-6 text-center text-gray-800 dark:text-white">
+        Send Anonymous Message to @{username}
       </h1>
-      <div>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-              control={form.control}
-              name="content"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Send Anonymous Message to {username}</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      placeholder="Write your message here..."
-                      {...field}
-                      className="resize-none"
-                    />
-                  </FormControl>
 
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {loading ? (
-              <Button disabled>
-                <Loader2 className="animate-spin">Please wait</Loader2>
-              </Button>
-            ) : (
-              <Button type="submit" disabled={loading}>
-                Send
-              </Button>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <FormField
+            control={form.control}
+            name="content"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-gray-700 dark:text-gray-200">
+                  Message
+                </FormLabel>
+                <FormControl>
+                  <Textarea
+                    placeholder="Write your message here..."
+                    {...field}
+                    className="resize-none bg-gray-50 dark:bg-gray-800 dark:text-white"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
-          </form>
-        </Form>
-      </div>
-      <div>
-        <Button onClick={suggestMessageMethod} disabled={isloading}>
-          Suggest message
-        </Button>
-        <Card className="w-5/6">
+          />
+
+          <div className="flex justify-end">
+            <Button type="submit" disabled={loading}>
+              {loading && (
+                <Loader2 className="animate-spin mr-2 h-4 w-4" />
+              )}
+              Send
+            </Button>
+          </div>
+        </form>
+      </Form>
+
+      <div className="mt-10">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
+            Suggested Messages
+          </h2>
+          <Button onClick={suggestMessageMethod} disabled={isSuggesting}>
+            {isSuggesting && <Loader2 className="animate-spin mr-2 h-4 w-4" />}
+            Suggest
+          </Button>
+        </div>
+
+        <Card className="w-full bg-gray-50 dark:bg-gray-800">
           <CardHeader>
-            <CardTitle>Suggested messages: </CardTitle>
+            <CardTitle className="text-gray-800 dark:text-white">
+              Click on any message to use it
+            </CardTitle>
           </CardHeader>
-          <p>Click on any message below to select it.</p>
-          <CardContent className="flex flex-col space-y-4">
-            {suggestedMessages.length > 0
-              ? makeArr(suggestedMessages).map((message, index) => (
-                  <div className="flex my-2" key={index}>
-                    <Button onClick={() => sendToTextArea(message)}>
-                      {message}
-                    </Button>
-                  </div>
-                ))
-              : makeArr(initialMessageString).map((message, index) => (
-                  <div className="flex my-2" key={index}>
-                    <Button onClick={() => sendToTextArea(message)}>
-                      {message}
-                    </Button>
-                  </div>
-                ))}
+          <CardContent className="flex flex-col space-y-2">
+            {(suggestedMessages.length > 0 ? suggestedMessages : defaultSuggestions).map(
+              (message, index) => (
+                <Button
+                  key={index}
+                  variant="outline"
+                  className="w-fit dark:border-gray-600 dark:text-gray-100"
+                  onClick={() => sendToTextArea(message)}
+                >
+                  {message}
+                </Button>
+              )
+            )}
           </CardContent>
         </Card>
       </div>
@@ -160,4 +161,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

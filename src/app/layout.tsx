@@ -4,6 +4,7 @@ import "./globals.css";
 import AuthProvider from "@/context/AuthProvider";
 import { Toaster } from "@/components/ui/toaster";
 import Navbar from "@/components/Navbar";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,16 +27,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <AuthProvider>
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-          {/* <Navbar /> */}
-          {children}
-          <Toaster />
-        </body>
-      </AuthProvider>
-    </html>
+<html lang="en">
+  <AuthProvider>
+    <body
+      className={`${geistSans.variable} ${geistMono.variable} antialiased box-content`}
+    >
+      {/* Top-right toggle button */}
+      <div className="fixed top-4 right-4 z-50">
+        <ThemeToggle />
+      </div>
+
+      {children}
+      <Toaster />
+    </body>
+  </AuthProvider>
+</html>
+
   );
 }

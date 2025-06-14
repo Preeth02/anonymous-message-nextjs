@@ -8,14 +8,16 @@ export async function middleware(request: NextRequest) {
   const url = request.nextUrl;
   if (
     (!token && url.pathname === "/sign-up") ||
-    url.pathname.startsWith("/verify*")
+    url.pathname.startsWith("/verify")
   ) {
     return NextResponse.next();
   }
   if (
-    (token && url.pathname === "/sign-in") ||
-    url.pathname === "/sign-up" ||
-    url.pathname.startsWith("/verify")
+    token &&
+    (url.pathname === "/sign-in" ||
+      url.pathname === "/sign-up" ||
+      url.pathname.startsWith("/verify") ||
+      url.pathname == "/")
   ) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
