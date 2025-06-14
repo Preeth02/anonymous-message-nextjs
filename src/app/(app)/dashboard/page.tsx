@@ -107,7 +107,7 @@ function Page() {
     fetchAcceptingMessage();
     fetchMessages();
   }, [
-    session?.user?._id,
+    session,
     setValue,
     toast,
     fetchAcceptingMessage,
