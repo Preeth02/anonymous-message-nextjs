@@ -25,7 +25,7 @@ function Page() {
   };
 
   const { toast } = useToast();
-  const { register, watch, setValue } = useForm({
+  const {watch, setValue } = useForm({
     resolver: zodResolver(acceptMessageSchema),
   });
   const { data: session } = useSession();

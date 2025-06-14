@@ -1,9 +1,8 @@
-import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { signInSchema } from "@/schema/signInSchema";
 import { ZodError } from "zod";
 import connectDB from "@/lib/dbConnect";
-import UserModel, { User } from "@/model/User";
+import UserModel from "@/model/User";
 import bcryptjs from "bcryptjs";
 import { NextAuthOptions } from "next-auth";
 // Your own logic for dealing with plaintext password strings; be careful!

@@ -1,8 +1,8 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import * as z from "zod";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 import { ApiResponse } from "@/types/ApiResponse";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -22,7 +22,7 @@ import { signInSchema } from "@/schema/signInSchema";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
 
-const page = () => {
+const SignIn = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { toast } = useToast();
@@ -44,7 +44,6 @@ const page = () => {
         identifier: data.identifier,
         password: data.password,
       });
-      console.log("Response after signin --->", result);
       if (result?.error) {
         if (result.error == "CredentialsSignin")
           toast({
@@ -78,73 +77,70 @@ const page = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-gray-200 dark:bg-gray-950">
-    <div className="w-full max-w-md space-y-6 bg-gray-100 dark:bg-gray-900 p-8 rounded-2xl shadow-md border border-gray-200 dark:border-gray-800">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Welcome Back</h1>
-        <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
-          Sign in to your account to manage messages
+      <div className="w-full max-w-md space-y-6 bg-gray-100 dark:bg-gray-900 p-8 rounded-2xl shadow-md border border-gray-200 dark:border-gray-800">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+            Welcome Back
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+            Sign in to your account to manage messages
+          </p>
+        </div>
+
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+            <FormField
+              control={form.control}
+              name="identifier"
+              render={({ field }) => (
+                <FormItem>
+                  {" "}
+                  <FormLabel className="flex">Email or Username</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Email or Username" {...field} />
+                  </FormControl>
+                  <FormMessage className="flex" />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="flex">Password</FormLabel>
+                  <FormControl>
+                    <Input placeholder="password" type="password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button
+              type="submit"
+              className={`bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded ${isSubmitting && " opacity-50 cursor-not-allowed"} `}
+            >
+              {isSubmitting ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                <span>Submit</span>
+              )}
+            </Button>
+          </form>
+        </Form>
+
+        <p className="text-sm text-center text-gray-600 dark:text-gray-400">
+          Don&apos;t have an account?{" "}
+          <Link
+            href="/sign-up"
+            className="font-medium text-blue-600 hover:underline dark:text-blue-400"
+          >
+            Sign up
+          </Link>
         </p>
       </div>
-  
-      <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-              <FormField
-                control={form.control}
-                name="identifier"
-                render={({ field }) => (
-                  <FormItem>
-                    {" "}
-                    <FormLabel className="flex">Email or Username</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Email or Username" {...field} />
-                    </FormControl>
-                    <FormMessage className="flex" />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="flex">Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="password"
-                        type="password"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button
-                type="submit"
-                className={`bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-4 rounded ${isSubmitting && " opacity-50 cursor-not-allowed"} `}
-              >
-                {isSubmitting ? (
-                  <Loader2 className="animate-spin" />
-                ) : (
-                  <span>Submit</span>
-                )}
-              </Button>
-            </form>
-          </Form>
-  
-      <p className="text-sm text-center text-gray-600 dark:text-gray-400">
-        Don&apos;t have an account?{" "}
-        <Link
-          href="/sign-up"
-          className="font-medium text-blue-600 hover:underline dark:text-blue-400"
-        >
-          Sign up
-        </Link>
-      </p>
     </div>
-  </div>
-  
   );
 };
 
-export default page;
+export default SignIn;
