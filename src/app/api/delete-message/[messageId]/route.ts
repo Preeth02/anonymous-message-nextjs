@@ -1,23 +1,27 @@
+import { NextRequest } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "../../auth/[...nextauth]/options";
 import connectDB from "@/lib/dbConnect";
 import UserModel from "@/model/User";
-import { authOptions } from "../../auth/[...nextauth]/options";
-import { getServerSession } from "next-auth";
 
-export async function DELETE(
-  req: Request, // You can use Request instead of NextRequest here
-  context: { params: { messageId: string } }
+export async function POST(
+  req: NextRequest,
+  { params }: any
 ): Promise<Response> {
-  const { messageId } = context.params;
-  await connectDB();
+  const { messageId } = params;
 
+  await connectDB();
   const session = await getServerSession(authOptions);
   const user = session?.user;
 
-  if (!user || !session) {
-    return new Response(
-      JSON.stringify({ success: false, message: "Not authenticated" }),
-      { status: 400 }
-    );
+  if (!user) {
+    return new Response(JSON.stringify({
+      success: false,
+      message: "Not authenticated"
+    }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" }
+    });
   }
 
   try {
@@ -27,22 +31,29 @@ export async function DELETE(
     );
 
     if (!updatedUser) {
-      return new Response(
-        JSON.stringify({ success: false, message: "Message not found or already deleted" }),
-        { status: 400 }
-      );
+      return new Response(JSON.stringify({
+        success: false,
+        message: "Message not found or already deleted"
+      }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" }
+      });
     }
 
-    return new Response(
-      JSON.stringify({ success: true, message: "Message has been deleted successfully" }),
-      { status: 200 }
-    );
+    return new Response(JSON.stringify({
+      success: true,
+      message: "Message deleted successfully"
+    }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" }
+    });
   } catch (error) {
-    const message =
-      error instanceof Error ? error.message : "Something went wrong while deleting the message";
-    return new Response(
-      JSON.stringify({ success: false, message }),
-      { status: 500 }
-    );
+    return new Response(JSON.stringify({
+      success: false,
+      message: "Internal Server Error"
+    }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" }
+    });
   }
 }
