@@ -11,7 +11,7 @@ export async function sendVerificationEmail(
 ): Promise<ApiResponse> {
   try {
     resend.emails.send({
-      from: "onboarding@resend.dev",
+      from: process.env.DOMAIN_EMAIL!,
       to: email,
       subject: "Anonymous Message | Verification Code",
       react: verificationEmail({ username, otp: verifyCode }),
