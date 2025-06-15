@@ -4,7 +4,7 @@ import { authOptions } from "../../auth/[...nextauth]/options";
 import connectDB from "@/lib/dbConnect";
 import UserModel from "@/model/User";
 
-export async function POST(
+export async function DELETE(
   req: NextRequest,
   { params }: any
 ): Promise<Response> {
