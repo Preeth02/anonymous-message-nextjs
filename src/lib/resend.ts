@@ -10,7 +10,7 @@ export async function sendVerificationEmail(
   verifyCode: string
 ): Promise<ApiResponse> {
   try {
-    resend.emails.send({
+    await resend.emails.send({
       from: process.env.DOMAIN_EMAIL!,
       to: email,
       subject: "Anonymous Message | Verification Code",
